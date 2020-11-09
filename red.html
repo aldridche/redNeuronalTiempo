@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <style type="text/css">
+            #sitio{
+                padding: 5rem;
+                font-size: 5rem;
+                margin-left: 15rem;
+            }
+        </style>
+    </head>
+    <body>
+        <input id="sal" data-jscolor="{onInput:'update(this)'}">
+        <div id="sitio">Hola Mundo</div>
+        <script src="jscolor.js"></script>
+        <script src="https://unpkg.com/brain.js"></script> 
+
+        <script>
+
+            //Inicia la red neuronal
+            var network = new brain.NeuralNetwork();
+
+            //Entrenarla
+            network.train([
+                //Fondo negro (entrada en 0s) = texto blanco (salida = 1)
+                {input: {rojo:0, verde:0, azul:0}, output:{color:1}},
+                //Fondo blanco (entrada en 1s) = texto negro (salida = 0)
+                {input: {rojo:1, verde:1, azul:1}, output:{color:0}}
+            ]);
+
+            function update(color){
+                console.log(color.toRGBString());
+                var col = color.toString();
+                var div = document.getElementById("sitio");
+                div.style.background = col;
+
+                var entrada = {
+                    rojo: color.channel('R')/255,
+                    verde: color.channel('V')/255,
+                    azul: color.channel('A')/255
+                }
+
+                var resultado = network.run(entrada);
+                console.log(resultado);
+
+                if(resultado.color > .5){
+                    div.style.color = "white";
+                }else{
+                    div.style.color = "black";
+                }
+            }
+        </script>
+    </body>
+</html>
